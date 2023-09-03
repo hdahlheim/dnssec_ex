@@ -49,7 +49,6 @@ defmodule DNSSEC do
 
   ## Examples
 
-
       iex> ds1 = DNSSEC.ds_from_binary(<<182,109,13,2,84,90,134,83,213,246,40,71,56,114,171,180,92,250,81,149,89,215,
       iex> 66,174,110,80,221,124,99,57,208,129,148,103,237,246>>)
       iex> ^ds1 = {46701, 13, 2, "VFqGU9X2KEc4cqu0XPpRlVnXQq5uUN18YznQgZRn7fY="}
@@ -62,11 +61,35 @@ defmodule DNSSEC do
     {type, algo, digest_type, Base.encode64(digest)}
   end
 
-  def ds_algorithm(1), do: :sha1
-
-  def ds_algorithm(_) do
-    raise "unassigned"
+  def ds_algorithm(algo) do
+    case algo do
+      1 -> :sha1
+      _ -> raise "unassigned"
+    end
   end
 
-  def keytag(key, keysize), do: :todo
+  @doc """
+  Calculates the keytag for a given DNSKEY in binary form.
+
+  RFC 4034 describes the keytag calculation in (Appendix B.1)[https://www.rfc-editor.org/rfc/rfc4034#appendix-B.1]
+
+  ## Examples
+
+      iex> 46701 = DNSSEC.keytag(<<1,1,3,13,10,191,218,31,120,61,229,200,246,58,127,56,155,139,113,10,183,53,
+      iex> 177,21,243,105,205,47,43,139,93,124,171,22,121,111,80,21,80,48,141,255,23,
+      iex> 143,120,77,132,41,97,60,101,79,71,20,250,34,81,11,182,120,9,189,3,192,244,
+      iex> 115,195,122>>)
+  """
+  def keytag(key_rdata) when is_binary(key_rdata) do
+    import Bitwise
+
+    key_rdata
+    |> :binary.bin_to_list()
+    |> Enum.with_index()
+    |> Enum.reduce(0, fn {char, i}, acc ->
+      acc + if rem(i, 2) == 0, do: char <<< 8, else: char
+    end)
+    |> then(fn ac -> ac + (ac >>> 16) &&& 0xFFFF end)
+    |> then(fn ac -> ac &&& 0xFFFF end)
+  end
 end
