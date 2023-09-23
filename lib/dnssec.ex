@@ -4,7 +4,7 @@ defmodule DNSSEC do
   """
 
   @doc """
-  Turns a binary DNSSEC Key RR into a tuple representation
+  Turns a binary DNSKEY RR into a tuple representation
 
                             1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -18,7 +18,7 @@ defmodule DNSSEC do
 
   ## Examples
 
-      iex> key1 = DNSSEC.dns_key_from_binary(<<1,0,3,13,242,30,156,252,222,57,116,223,132,191,19,155,37,12,64,136,235,7,
+      iex> key1 = DNSSEC.dnskey_from_binary(<<1,0,3,13,242,30,156,252,222,57,116,223,132,191,19,155,37,12,64,136,235,7,
       iex> 131,136,123,28,153,210,101,48,230,44,0,176,186,246,212,11,224,101,101,32,
       iex> 177,35,160,0,130,237,220,125,167,162,139,140,23,189,73,59,110,219,144,41,68,
       iex> 80,220,44,123,66>>)
@@ -30,7 +30,7 @@ defmodule DNSSEC do
       iex> ^key2 = {257, 3, 13, "Cr/aH3g95cj2On84m4txCrc1sRXzac0vK4tdfKsWeW9QFVAwjf8Xj3hNhClhPGVPRxT6IlELtngJvQPA9HPDeg=="}
 
   """
-  def dns_key_from_binary(<<flags::16, proto::8, algo::8, pubkey::binary>>) do
+  def dnskey_from_binary(<<flags::16, proto::8, algo::8, pubkey::binary>>) do
     {flags, proto, algo, Base.encode64(pubkey)}
   end
 
