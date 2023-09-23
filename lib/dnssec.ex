@@ -89,7 +89,16 @@ defmodule DNSSEC do
     |> Enum.reduce(0, fn {char, i}, acc ->
       acc + if rem(i, 2) == 0, do: char <<< 8, else: char
     end)
-    |> then(fn ac -> ac + (ac >>> 16) &&& 0xFFFF end)
-    |> then(fn ac -> ac &&& 0xFFFF end)
+    |> then(fn ac -> ac + (ac >>> 16) &&& 0xFFFF &&& 0xFFFF end)
   end
+
+  @doc """
+  DNS Record type for DNSKEY
+  """
+  def dnskey_type(), do: 48
+
+  @doc """
+  DNS Record type for DS
+  """
+  def ds_type(), do: 43
 end
