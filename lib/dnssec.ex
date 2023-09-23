@@ -64,6 +64,9 @@ defmodule DNSSEC do
   def ds_algorithm(algo) do
     case algo do
       1 -> :sha1
+      2 -> :sha256
+      # 3 ->	GOST R 34.11-94	OPTIONAL	[RFC5933]
+      4 -> :sha384
       _ -> raise "unassigned"
     end
   end
