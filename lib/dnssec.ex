@@ -83,6 +83,11 @@ defmodule DNSSEC do
       iex> 143,120,77,132,41,97,60,101,79,71,20,250,34,81,11,182,120,9,189,3,192,244,
       iex> 115,195,122>>)
   """
+  def keytag(key) when is_tuple(key) and tuple_size(key) == 4 do
+    {flags, proto, algo, pubkey} = key
+    keytag(<<flags::16, proto::8, algo::8, Base.decode64!(pubkey)::binary>>)
+  end
+
   def keytag(key_rdata) when is_binary(key_rdata) do
     import Bitwise
 
